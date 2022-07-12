@@ -51,7 +51,7 @@ require([
     const birdSightings = resp?.data?.sightings?.map((s) => {
       return {
         attributes: s,
-        geometry: new Point({ latitude: s.y, longitude: s.x }),
+        geometry: new Point({ latitude: s.lat, longitude: s.long }),
       };
     });
 
@@ -85,7 +85,7 @@ require([
   esriRequest(birdsightingUrl).then((resp) => {
     // create list of feature-like objects
     const birdSightings = resp?.data?.sightings?.map((s) => {
-      const point = new Point({ latitude: s.y, longitude: s.x });
+      const point = new Point({ latitude: s.lat, longitude: s.long });
       return {
         attributes: s,
         geometry: webMercatorUtils.geographicToWebMercator(point),
