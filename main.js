@@ -1,5 +1,5 @@
-//const birdSitingUrl = "https://bird-sitings-api.herokuapp.com/sitings";
-const birdSitingUrl = "http://localhost:3000/sitings";
+// const birdsightingUrl = "https://bird-sitings-api.herokuapp.com/sightings";
+const birdsightingUrl = "http://localhost:3000/sightings";
 
 import BirdLayerModule from "./BirdLayer.js";
 
@@ -24,6 +24,9 @@ require([
   Layer,
   webMercatorUtils
 ) => {
+  // custom layer view
+  const BirdLayer = BirdLayerModule(BaseLayerView2D, Layer);
+
   const map = new Map({
     basemap: "topo-vector",
   });
@@ -42,20 +45,17 @@ require([
   });
   view.popup.defaultPopupTemplateEnabled = true;
 
-  esriRequest(birdSitingUrl).then((resp) => {
-    const birdSitings = resp?.data?.sitings?.map((s) => {
+  /* FEATURE LAYER with CUSTOM DATA */
+  // custom data source request
+  esriRequest(birdsightingUrl).then((resp) => {
+    const birdSightings = resp?.data?.sightings?.map((s) => {
       return {
         attributes: s,
         geometry: new Point({ latitude: s.y, longitude: s.x }),
       };
     });
-    console.log(birdSitings);
 
     // feature layer
-    const fields = [
-      { name: "birdname", alias: "Bird Name", type: "string" },
-      { name: "timestamp", alias: "Date Sighted", type: "date" },
-    ];
     const renderer = {
       type: "simple",
       symbol: {
@@ -65,28 +65,33 @@ require([
         outline: "white",
       },
     };
-    let featureLayer = new FeatureLayer({
-      title: "Bird Sitings",
-      source: birdSitings,
+    const featureLayer = new FeatureLayer({
+      title: "Bird sightings",
+      source: birdSightings,
       renderer: renderer,
       objectIdField: "objectid",
-      fields,
+      fields: [
+        { name: "birdname", alias: "Bird Name", type: "string" },
+        { name: "timestamp", alias: "Date Sighted", type: "date" },
+      ],
       popupEnabled: true,
     });
 
     map.add(featureLayer);
+  });
 
-    // custom layer view
-    const BirdLayer = BirdLayerModule(BaseLayerView2D, Layer);
-    const graphics = birdSitings
-      .filter((g) => g.geometry && g.geometry.spatialReference)
-      .map(
-        (g) =>
-          new Graphic({
-            attributes: g.attributes,
-            geometry: webMercatorUtils.geographicToWebMercator(g.geometry),
-          })
-      );
+  /* CUSTOM LAYER DATA */
+  // custom data source request
+  esriRequest(birdsightingUrl).then((resp) => {
+    // create list of feature-like objects
+    const birdSightings = resp?.data?.sightings?.map((s) => {
+      const point = new Point({ latitude: s.y, longitude: s.x });
+      return {
+        attributes: s,
+        geometry: webMercatorUtils.geographicToWebMercator(point),
+      };
+    });
+    console.log(birdSightings);
 
     // wrapper for HtmlImageElement onload / onerror
     const loadImage = (src, img) => {
@@ -97,14 +102,20 @@ require([
       });
     };
 
-    const promises = ["House Finch"].map((n) => {
-      return loadImage("images/house-finch.jpg", new Image());
+    const imgPromises = birdSightings.map((s) => {
+      return loadImage(
+        `images/${s.attributes.birdname
+          .replaceAll(" ", "-")
+          .toLowerCase()}.jpg`,
+        new Image()
+      );
     });
-    Promise.all(promises).then((images) => {
+
+    Promise.all(imgPromises).then((images) => {
       const birdLayer = new BirdLayer({
-        title: "Bird Siting Photo Layer",
-        graphics,
-        image: images[0],
+        title: "Bird Sighting Photo Layer",
+        points: birdSightings,
+        images,
       });
       map.add(birdLayer);
     });

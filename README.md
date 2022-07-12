@@ -12,4 +12,6 @@ This is the repo created for my presentation "Extending the JS API" at Esri's 20
 
 ## Image Credits
 
-- House finch image by [GeorgeB2](https://pixabay.com/users/georgeb2-5394567/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=6184975) from [Pixabay](https://pixabay.com/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=6184975)
+- House finch image by [GeorgeB2](https://pixabay.com/users/georgeb2-5394567/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=6184975)
+- Yellow rumped warbler image by [Jason Zangari](https://pixabay.com/users/366photos-8203432/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=3189037)
+- Black phoebe image by [PublicDomainImages](https://pixabay.com/users/publicdomainimages-327722/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=387335)
